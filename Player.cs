@@ -9,7 +9,7 @@ public class Player1Controller : MonoBehaviour
     private Player thePlayer;
     public TextMeshPro tm;
     public GameObject destinationGO;
-    public float speed = 3.0f; //NEW CODE
+    public float speed = 1.0f; //NEW CODE
 
     void Start()
     {
@@ -24,7 +24,7 @@ public class Player1Controller : MonoBehaviour
         //print(Vector3.Distance(this.gameObject.transform.position != this.destinationGO.transform.position));
         if (Vector3.Distance(this.gameObject.transform.position, this.destinationGO.transform.position) > 1.0f)
         {
-            this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.destinationGO.transform.position, this.speed * Time.deltaTime);
+            this.gameObject.transform.position = Vector3.Slerp(this.gameObject.transform.position, this.destinationGO.transform.position, this.speed * Time.deltaTime);
         }
         //NEW CODE**
     }
