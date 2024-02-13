@@ -3,29 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 
 public class Player1Controller : MonoBehaviour
 {
-    private Player thePlayer;
-    public TextMeshPro tm;
-    public GameObject destinationGO;
-    public float speed = 1.0f; //NEW CODE
-
+    
     void Start()
     {
-        this.thePlayer = new Player("Cole");
-        tm.text = this.thePlayer.getName() + "->" + this.thePlayer.getHP();
+        
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        print("onCollision");
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        print("Secret Number = " + MySingleton.secretnumber);
+        MySingleton.secretnumber = 5;
+        EditorSceneManager.LoadScene("Scene2");
+    }
+
 
     private void Update()
     {
-        this.thePlayer.display();
-        //NEW CODE**
-        //print(Vector3.Distance(this.gameObject.transform.position != this.destinationGO.transform.position));
-        if (Vector3.Distance(this.gameObject.transform.position, this.destinationGO.transform.position) > 1.0f)
-        {
-            this.gameObject.transform.position = Vector3.Slerp(this.gameObject.transform.position, this.destinationGO.transform.position, this.speed * Time.deltaTime);
-        }
-        //NEW CODE**
+      
     }
 }
