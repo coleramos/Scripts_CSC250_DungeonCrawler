@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         if (other.CompareTag("door"))
         {
             MySingleton.currentDirection = "north";
-            EditorSceneManager.LoadScene("DungeonRoom");
+            EditorSceneManager.LoadScene("Scene");
         }
     }
 
