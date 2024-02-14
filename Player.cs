@@ -5,32 +5,38 @@ using UnityEditor.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    public GameObject northExit;
+    public GameObject southExit;
+    public GameObject eastExit;
+    public GameObject westExit;
+    private float speed = 5.0f;
+
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        print("onCollision");
+        //not our first scene
+        if (!MySingleton.currentDirection.Equals("?"))
+        {
+            if (MySingleton.currentDirection.Equals("north"))
+            {
+                this.gameObject.transform.position = this.southExit.transform.position;
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        print("Secret Number = " + MySingleton.secretNumber);
-        MySingleton.secretNumber = 5;
-        EditorSceneManager.LoadScene("Scene2");
+        if (other.CompareTag("door"))
+        {
+            MySingleton.currentDirection = "north";
+            EditorSceneManager.LoadScene("DungeonRoom");
+        }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        print("onTriggerExit");
-
-    }
     // Update is called once per frame
     void Update()
     {
-        
+        this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.northExit.transform.position, this.speed * Time.deltaTime);
+
     }
 }
