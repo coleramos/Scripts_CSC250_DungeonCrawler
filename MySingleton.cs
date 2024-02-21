@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MySingleton
@@ -11,7 +12,9 @@ public class MySingleton
 
     public static void addRoom(Room r)
     {
-        theRooms[numRooms] = r;
-        numRooms++;
+        //static context
+        MySingleton.theRooms[numRooms] = r;
+        MySingleton.numRooms++;
+        
     }
 }
