@@ -16,7 +16,7 @@ public class Room
 
     public void setOpenDoor(string direction)
     {
-        this.theOpenDoors[howManyOpenDoors] = direction;
+        this.theOpenDoors[this.howManyOpenDoors] = direction;
         this.howManyOpenDoors++;
     }
     public bool isOpenDoor(string direction)

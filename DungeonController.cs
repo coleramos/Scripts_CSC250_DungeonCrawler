@@ -18,11 +18,11 @@ public class DungeonController : MonoBehaviour
         }
         else if (index == 2)
         {
-            return "north";
+            return "east";
         } 
         else if (index == 3)
         {
-            return "north";
+            return "west";
         }
         else
         {
