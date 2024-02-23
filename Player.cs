@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Rigidbody rb = this.gameObject.GetComponent<Rigidbody>();
+        //Rigidbody rb = this.gameObject.GetComponent<Rigidbody>();
 
         //disable all exits when the scene first loads
         this.turnOffExits();

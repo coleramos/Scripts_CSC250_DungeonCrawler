@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +26,7 @@ public class Room
             {
                 return true;
             }
-            return false; //whatever direction you wanted to go does not have an open door
         }
+        return false; //whatever direction you wanted to go does not have an open door
     }
 }

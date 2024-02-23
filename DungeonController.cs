@@ -29,14 +29,13 @@ public class DungeonController : MonoBehaviour
             return "?";
         }
     }
-    // Start is called before the first frame update
     void Start()
     {
         MySingleton.theCurrentRoom = new Room("a room");
         //MySingleton.addRoom(MySingleton.theCurrentRoom); //Not Using This Yet...
 
         int openDoorIndex = Random.Range(0, 4);
-        this.closedDoors[Random.Range(0, 4)].SetActive(false); //visually make an open door
+        this.closedDoors[openDoorIndex].SetActive(false); //visually make an open door
         MySingleton.theCurrentRoom.setOpenDoor(this.mapIndexToStringForExit(openDoorIndex));
 
         for (int i = 0; i < 4; i++)
