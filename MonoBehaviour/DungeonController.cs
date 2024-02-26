@@ -31,6 +31,8 @@ public class DungeonController : MonoBehaviour
     }
     void Start()
     {
+        
+
         MySingleton.theCurrentRoom = new Room("a room");
         //MySingleton.addRoom(MySingleton.theCurrentRoom); //Not Using This Yet...
 
