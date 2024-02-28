@@ -31,7 +31,12 @@ public class DungeonController : MonoBehaviour
     }
     void Start()
     {
-        
+
+        //Is this the first room and should I generate the dungeon? 
+        if (MySingleton.theDungeon == null)
+        { 
+            MySingleton.generateDungeon();
+        }
 
         MySingleton.theCurrentRoom = new Room("a room");
         //MySingleton.addRoom(MySingleton.theCurrentRoom); //Not Using This Yet...
