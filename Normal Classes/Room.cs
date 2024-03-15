@@ -16,10 +16,31 @@ public class Room
         this.currentPlayer = null;
     }
 
-    public void addPlayer(Player thePlayer)
+    public void addPlayer(Player thePlayer) //this updates the player to their new current room
     {
         this.currentPlayer = thePlayer;
         this.currentPlayer.setCurrentRoom(this);
+    }
+
+    //remove the current player from this room
+    public void removePlayer(string direction)
+    {
+        Exit theExit = this.getExitGivenDirection(direction);
+        Room destinationRoom = theExit.getDestinationRoom();
+        destinationRoom.addPlayer(this.currentPlayer);
+        this.currentPlayer = null; //finally remove thePlayer that just left from this room
+
+    }
+    private Exit getExitGivenDirection(string direction)
+    {
+        for (int i = 0; i < this.howManyExits; i++)
+        {
+            if (this.theExits[i].getDirection().Equals(direction))
+            {
+                return this.theExits[i]; //returns the exit in the given direction
+            }
+        }
+        return null; //never found the exit
     }
 
     public bool hasExit(string direction)
