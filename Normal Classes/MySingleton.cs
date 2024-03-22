@@ -7,7 +7,33 @@ public class MySingleton
     public static string currentDirection = "?";
     public static Player thePlayer;
     public static Dungeon theDungeon = MySingleton.generateDungeon();
+    public static bool isThisTheFirstTimeInTheFirstRoom = true;
 
+
+    public static string flipDirection(string direction)
+    {
+        if(direction.Equals("north"))
+        {
+            return "south";
+        }
+        else if(direction.Equals("south"))
+        {
+            return "south";
+        }
+        else if (direction.Equals("east"))
+        {
+            return "east";
+        }
+        else if (direction.Equals("west"))
+        {
+            return "west";
+        }
+        else
+        {
+            Debug.Log(direction + "is not a legal direction in flipDirection inside of MySingleton");
+            return "N/A";
+        }
+    }
     private static Dungeon generateDungeon()
     {
         Room r1 = new Room("R1");
@@ -30,7 +56,7 @@ public class MySingleton
 
         Dungeon theDungeon = new Dungeon("the cross");
         theDungeon.setStartRoom(r1);
-        MySingleton.thePlayer = new Player("Mike");
+        MySingleton.thePlayer = new Player("Cole");
         theDungeon.addPlayer(MySingleton.thePlayer);
         return theDungeon;
     }

@@ -105,15 +105,29 @@ public class PlayerController : MonoBehaviour
         {
             print("Loading scene");
 
-            //remove the player from the current room and place him into the destination room, prior to loading the new scene
+            //remove the player from the current room and place him into the destination, prior to loading the new scene
             MySingleton.thePlayer.getCurrentRoom().removePlayer(MySingleton.currentDirection);
 
             EditorSceneManager.LoadScene("DungeonRoom");
+        }
+        else if (other.CompareTag("power-pellet"))
+        {
+            other.gameObject.SetActive(false); //visually make pellet disappear
+
+            //programatically  make sure the pellet doesnt show up again
+            Room theCurrentRoom = MySingleton.thePlayer.getCurrentRoom();
+            theCurrentRoom.removePellet(other.GetComponent<pelletController>().direction); //this is our code to fix the pellet...add ; to end of this line for error to go away
+
+
+
+
+
         }
         else if (other.CompareTag("middleOfTheRoom") && !MySingleton.currentDirection.Equals("?"))
         {
             //we have hit the middle of the room, so lets turn off the collider
             //until the next run of the scene to avoid additional collisions
+
             this.middleOfTheRoom.SetActive(false);
             this.turnOnExits();
 
