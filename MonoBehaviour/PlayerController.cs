@@ -89,7 +89,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     /*
     IEnumerator turnOnMiddle()
     {
@@ -113,14 +112,18 @@ public class PlayerController : MonoBehaviour
         }
         else if (other.CompareTag("power-pellet"))
         {
+            EditorSceneManager.LoadScene("FightScene");
+
             other.gameObject.SetActive(false); //visually make pellet disappear
 
             //programatically  make sure the pellet doesnt show up again
             Room theCurrentRoom = MySingleton.thePlayer.getCurrentRoom();
             theCurrentRoom.removePellet(other.GetComponent<pelletController>().direction); //this is our code to fix the pellet...add ; to end of this line for error to go away
 
-        }
 
+
+
+        }
         else if (other.CompareTag("middleOfTheRoom") && !MySingleton.currentDirection.Equals("?"))
         {
             //we have hit the middle of the room, so lets turn off the collider
@@ -197,6 +200,4 @@ public class PlayerController : MonoBehaviour
             this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.eastExit.transform.position, this.speed * Time.deltaTime);
         }
     }
-
-
 }
