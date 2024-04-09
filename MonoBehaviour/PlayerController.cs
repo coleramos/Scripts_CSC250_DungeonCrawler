@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private float speed = 5.0f;
     private bool amMoving = false;
     private bool amAtMiddleOfRoom = false;
+    public static string pelletDirection;
 
     private void turnOffExits()
     {
@@ -103,43 +104,26 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("door"))
         {
-            print("Loading scene");
-
-            //remove the player from the current room and place him into the destination, prior to loading the new scene
+            // Loading scene
             MySingleton.thePlayer.getCurrentRoom().removePlayer(MySingleton.currentDirection);
-
             EditorSceneManager.LoadScene("DungeonRoom");
         }
         else if (other.CompareTag("power-pellet"))
         {
+            // Loading fight scene
             EditorSceneManager.LoadScene("FightScene");
-
-            other.gameObject.SetActive(false); //visually make pellet disappear
-
-            //programatically  make sure the pellet doesnt show up again
-            Room theCurrentRoom = MySingleton.thePlayer.getCurrentRoom();
-            theCurrentRoom.removePellet(other.GetComponent<pelletController>().direction); //this is our code to fix the pellet...add ; to end of this line for error to go away
-
-
-
-
+            // Pass pellet direction to the fight scene
+            fightController.pelletDirection = other.GetComponent<pelletController>().direction;
         }
         else if (other.CompareTag("middleOfTheRoom") && !MySingleton.currentDirection.Equals("?"))
         {
-            //we have hit the middle of the room, so lets turn off the collider
-            //until the next run of the scene to avoid additional collisions
-
+            // we have hit the middle of the room, so let's turn off the collider
+            // until the next run of the scene to avoid additional collisions
             this.middleOfTheRoom.SetActive(false);
             this.turnOnExits();
-
-            print("middle");
             this.amAtMiddleOfRoom = true;
             this.amMoving = false;
             MySingleton.currentDirection = "middle";
-        }
-        else
-        {
-            print("spomethilskdfjskldjfsdjkl");
         }
     }
 
