@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.SceneManagement;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public TextMeshPro pellet_TMP;
     public GameObject northExit;
     public GameObject southExit;
     public GameObject eastExit;
@@ -13,7 +15,8 @@ public class PlayerController : MonoBehaviour
     private float speed = 5.0f;
     private bool amMoving = false;
     private bool amAtMiddleOfRoom = false;
-    public static string pelletDirection;
+    public int attackBonusPrice = 5;
+    public int attackBonusAmount = 5;
 
     private void turnOffExits()
     {
@@ -35,6 +38,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //set the current pellet count for the player
+        this.pellet_TMP.text = "" + MySingleton.currentPellets;
         //Rigidbody rb = this.gameObject.GetComponent<Rigidbody>();
 
         //disable all exits when the scene first loads
@@ -99,31 +104,56 @@ public class PlayerController : MonoBehaviour
 
     }
     */
-
+    
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("door"))
         {
-            // Loading scene
+            print("Loading scene");
+
+            //remove the player from the current room and place him into the destination, prior to loading the new scene
             MySingleton.thePlayer.getCurrentRoom().removePlayer(MySingleton.currentDirection);
+
             EditorSceneManager.LoadScene("DungeonRoom");
         }
         else if (other.CompareTag("power-pellet"))
         {
-            // Loading fight scene
             EditorSceneManager.LoadScene("FightScene");
-            // Pass pellet direction to the fight scene
-            fightController.pelletDirection = other.GetComponent<pelletController>().direction;
+
+            other.gameObject.SetActive(false); //visually make pellet disappear
+
+            //programatically  make sure the pellet doesnt show up again
+            Room theCurrentRoom = MySingleton.thePlayer.getCurrentRoom();
+            theCurrentRoom.removePellet(other.GetComponent<pelletController>().direction); //this is our code to fix the pellet...add ; to end of this line for error to go away
+
+
+
+
         }
         else if (other.CompareTag("middleOfTheRoom") && !MySingleton.currentDirection.Equals("?"))
         {
-            // we have hit the middle of the room, so let's turn off the collider
-            // until the next run of the scene to avoid additional collisions
+            //we have hit the middle of the room, so lets turn off the collider
+            //until the next run of the scene to avoid additional collisions
+
             this.middleOfTheRoom.SetActive(false);
             this.turnOnExits();
+
+            print("middle");
             this.amAtMiddleOfRoom = true;
             this.amMoving = false;
             MySingleton.currentDirection = "middle";
+        }
+        else if(other.CompareTag("item-pellet"))
+        {
+            MySingleton.currentPellets--;
+        }
+        if(other.GetComponent<itemController>().itemName == "Attack Bonus")
+        {
+            //????????
+        }
+        else
+        {
+            print("spomethilskdfjskldjfsdjkl");
         }
     }
 

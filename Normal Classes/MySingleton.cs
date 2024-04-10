@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MySingleton
 {
+    public static int currentPellets = 0;
     public static string currentDirection = "?";
     public static Player thePlayer;
     public static Dungeon theDungeon = MySingleton.generateDungeon();
@@ -58,5 +59,17 @@ public class MySingleton
         MySingleton.thePlayer = new Player("Mike");
         theDungeon.addPlayer(MySingleton.thePlayer);
         return theDungeon;
+    }
+
+    public class Item
+    {
+        public string itemName;
+        public int price; 
+
+        public Item(string name, int price)
+        {
+            this.itemName = name;
+            this.price = price;
+        }
     }
 }
