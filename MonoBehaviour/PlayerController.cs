@@ -1,163 +1,207 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEditor.SceneManagement;
+using TMPro;
 
-public class fightController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    private bool isFightOver = false;
-    public GameObject hero_GO, monster_GO;
-    public TextMeshPro hero_hp_TMP, monster_hp_TMP;
-    private GameObject currentAttacker;
-    private Animator theCurrentAnimator;
-    private Monster theMonster;
-    private bool shouldAttack = true;
-    private AudioSource attackSound;
-    public TextMeshPro fightCommentaryTMP;
-    public GameObject winningSoundGO, losingSoundGO, battleBackgroundGO;
-    private AudioSource winningSound, losingSound;
+    public TextMeshPro pellet_TMP;
+    public GameObject northExit;
+    public GameObject southExit;
+    public GameObject eastExit;
+    public GameObject westExit;
+    public GameObject middleOfTheRoom;
+    private float speed = 5.0f;
+    private bool amMoving = false;
+    private bool amAtMiddleOfRoom = false;
+
+    private void turnOffExits()
+    {
+        this.northExit.gameObject.SetActive(false);
+        this.southExit.gameObject.SetActive(false);
+        this.eastExit.gameObject.SetActive(false);
+        this.westExit.gameObject.SetActive(false);
+
+    }
+
+    private void turnOnExits()
+    {
+        this.northExit.gameObject.SetActive(true);
+        this.southExit.gameObject.SetActive(true);
+        this.eastExit.gameObject.SetActive(true);
+        this.westExit.gameObject.SetActive(true);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        this.winningSound = this.winningSoundGO.GetComponent<AudioSource>();
-        this.losingSound = this.losingSoundGO.GetComponent<AudioSource>();
-        this.fightCommentaryTMP.text = "";
-        this.attackSound = this.gameObject.GetComponent<AudioSource>();
-        this.theMonster = new Monster("Pink Ghost");
-        this.hero_hp_TMP.text = "Current HP: " + MySingleton.thePlayer.getHP() + " AC: " + MySingleton.thePlayer.getAC();
-        this.monster_hp_TMP.text = "Current HP: " + this.theMonster.getHP() + " AC: " + this.theMonster.getAC();
+        //set the current pellet count for the player
+        this.pellet_TMP.text = "" + MySingleton.currentPellets;
+        //Rigidbody rb = this.gameObject.GetComponent<Rigidbody>();
 
-        int num = Random.Range(0, 2); //coin flip, will produce 0 and 1 (since 2 is not included)
-        if (num == 0)
+        //disable all exits when the scene first loads
+        this.turnOffExits();
+
+        //disable the middle collider until we know what our initial state will be
+        //it should already be disabled by default, but for clarity, lets do it here
+        this.middleOfTheRoom.SetActive(false);
+
+        if (!MySingleton.currentDirection.Equals("?"))
         {
-            this.currentAttacker = hero_GO;
-        }
-        else
-        {
-            this.currentAttacker = monster_GO;
-        }
+            //mark ourselves as moving since we are entering the scene through one of the exits
+            this.amMoving = true;
 
-        StartCoroutine(fight());
-    }
+            //we will be positioning the player by one of the exits so we can turn on the middle collider
+            this.middleOfTheRoom.SetActive(true);
+            this.amAtMiddleOfRoom = false;
 
-    private void tryAttack(Inhabitant attacker, Inhabitant defender)
-    {
-        StartCoroutine(MoveAndReturn());
-        this.fightCommentaryTMP.text = "";
-        //have attacker try to attack the defender
-        int attackRoll = Random.Range(0, 20) + 1;
-        if (attackRoll >= defender.getAC())
-        {
-            //attacker will hit the defender, lets see how hard!!!!
-            int damageRoll = Random.Range(0, 4) + 2; //damage between 2 and 5
-            this.fightCommentaryTMP.color = Color.red;
-            this.fightCommentaryTMP.text = "Attack hits for " + damageRoll;
-            defender.takeDamage(damageRoll);
-            this.attackSound.Play();
-        }
-        else
-        {
-            this.fightCommentaryTMP.color = Color.blue;
-            this.fightCommentaryTMP.text = "Attack Misses!!!";
-        }
-    }
-
-    IEnumerator MoveAndReturn()
-    {
-        float moveDistance = 2.0f;
-        float delay = 0.3f;
-        Vector3 originalPosition = this.currentAttacker.transform.position;
-
-        if (this.currentAttacker == this.monster_GO)
-        {
-            moveDistance *= -1;
-        }
-        // Move the GameObject to the left by 2 units
-        this.currentAttacker.transform.position = new Vector3(this.currentAttacker.transform.position.x - moveDistance, this.currentAttacker.transform.position.y, this.currentAttacker.transform.position.z);
-
-        // Wait for 0.2 seconds
-        yield return new WaitForSeconds(delay);
-
-        // Move the GameObject back to its original position
-        this.currentAttacker.transform.position = originalPosition;
-
-        if (this.currentAttacker == this.monster_GO)
-        {
-            this.currentAttacker = this.hero_GO;
-        }
-        else
-        {
-            this.currentAttacker = this.monster_GO;
-        }
-    }
-
-    IEnumerator fight()
-    {
-        if (this.shouldAttack)
-        {
-            this.theCurrentAnimator = this.currentAttacker.GetComponent<Animator>();
-            //this.theCurrentAnimator.SetTrigger("attack");
-            //this.hero_GO.transform.Translate(new Vector3(10, 0, 0));
-            if (this.currentAttacker == this.hero_GO)
+            if (MySingleton.currentDirection.Equals("north"))
             {
-                this.tryAttack(MySingleton.thePlayer, this.theMonster);
-                this.monster_hp_TMP.text = "Current HP: " + this.theMonster.getHP() + " AC: " + this.theMonster.getAC();
-
-                //now the defender may have fewer hp...check if their are dead?
-                if (this.theMonster.getHP() <= 0)
-                {
-                    this.winningSound.Play();
-                    this.monster_GO.transform.Rotate(-90, 0, 0);
-                    this.fightCommentaryTMP.text = "Hero Wins!!!";
-                    MySingleton.currentPellets++;
-                    this.isFightOver = true;
-                    Destroy(this.battleBackgroundGO);
-
-                    this.shouldAttack = false;
-                }
-                else
-                {
-                    yield return new WaitForSeconds(0.75f);
-                    StartCoroutine(fight());
-                }
-
+                this.gameObject.transform.position = this.southExit.transform.position;
+                this.gameObject.transform.LookAt(this.northExit.transform.position);
+                //rb.MovePosition(this.southExit.transform.position);
             }
-            else
+            else if (MySingleton.currentDirection.Equals("south"))
             {
-                this.tryAttack(this.theMonster, MySingleton.thePlayer);
-                this.hero_hp_TMP.text = "Current HP: " + MySingleton.thePlayer.getHP() + " AC: " + MySingleton.thePlayer.getAC();
-
-                //now the defender may have fewer hp...check if their are dead?
-                if (MySingleton.thePlayer.getHP() <= 0)
-                {
-                    this.losingSound.Play();
-                    this.hero_GO.transform.Rotate(-90, 0, 0);
-                    this.fightCommentaryTMP.text = "Monster Wins!!!!!";
-                    this.isFightOver = true;
-                    Destroy(this.battleBackgroundGO);
-                    this.shouldAttack = false;
-                }
-                else
-                {
-                    yield return new WaitForSeconds(0.75f);
-                    StartCoroutine(fight());
-                }
+                this.gameObject.transform.position = this.northExit.transform.position;
+                this.gameObject.transform.LookAt(this.southExit.transform.position);
+                //rb.MovePosition(this.northExit.transform.position);
             }
+            else if (MySingleton.currentDirection.Equals("west"))
+            {
+                this.gameObject.transform.position = this.eastExit.transform.position;
+                this.gameObject.transform.LookAt(this.westExit.transform.position);
+                //rb.MovePosition(this.eastExit.transform.position);
+            }
+            else if (MySingleton.currentDirection.Equals("east"))
+            {
+                this.gameObject.transform.position = this.westExit.transform.position;
+                this.gameObject.transform.LookAt(this.eastExit.transform.position);
+                //rb.MovePosition(this.westExit.transform.position);
+            }
+            //StartCoroutine(turnOnMiddle());
         }
+        else
+        {
+            //We will be positioning the play at the middle
+            //so keep the middle collider off for this run of the scene
+            this.amMoving = false;
+            this.amAtMiddleOfRoom = true;
+            this.middleOfTheRoom.SetActive(false);
+            this.gameObject.transform.position = this.middleOfTheRoom.transform.position;
+        }
+    }
 
+    /*
+    IEnumerator turnOnMiddle()
+    {
+        yield return new WaitForSeconds(1);
+        this.middleOfTheRoom.SetActive(true);
+        print("turned on");
+
+    }
+    */
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("door"))
+        {
+            print("Loading scene");
+
+            //remove the player from the current room and place him into the destination, prior to loading the new scene
+            MySingleton.thePlayer.getCurrentRoom().removePlayer(MySingleton.currentDirection);
+
+            EditorSceneManager.LoadScene("DungeonRoom");
+        }
+        else if (other.CompareTag("power-pellet"))
+        {
+            EditorSceneManager.LoadScene("FightScene");
+
+            other.gameObject.SetActive(false); //visually make pellet disappear
+
+            //programatically  make sure the pellet doesnt show up again
+            Room theCurrentRoom = MySingleton.thePlayer.getCurrentRoom();
+            theCurrentRoom.removePellet(other.GetComponent<pelletController>().direction); //this is our code to fix the pellet...add ; to end of this line for error to go away
+
+
+
+
+        }
+        else if (other.CompareTag("middleOfTheRoom") && !MySingleton.currentDirection.Equals("?"))
+        {
+            //we have hit the middle of the room, so lets turn off the collider
+            //until the next run of the scene to avoid additional collisions
+
+            this.middleOfTheRoom.SetActive(false);
+            this.turnOnExits();
+
+            print("middle");
+            this.amAtMiddleOfRoom = true;
+            this.amMoving = false;
+            MySingleton.currentDirection = "middle";
+        }
+        else
+        {
+            print("spomethilskdfjskldjfsdjkl");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isFightOver && Input.GetKeyUp(KeyCode.Space)) //when the fight is finally over
+        if (Input.GetKeyUp(KeyCode.UpArrow) && !this.amMoving && MySingleton.thePlayer.getCurrentRoom().hasExit("north"))
         {
-            //we want to go back to the dungeon scene
-            MySingleton.thePlayer.resetStats(); //give the player their hp back
-            EditorSceneManager.LoadScene("DungeonRoom");
+            this.amMoving = true;
+            this.turnOnExits();
+            MySingleton.currentDirection = "north";
+            this.gameObject.transform.LookAt(this.northExit.transform.position);
         }
 
+        if (Input.GetKeyUp(KeyCode.DownArrow) && !this.amMoving && MySingleton.thePlayer.getCurrentRoom().hasExit("south"))
+        {
+            this.amMoving = true;
+            this.turnOnExits();
+            MySingleton.currentDirection = "south";
+            this.gameObject.transform.LookAt(this.southExit.transform.position);
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftArrow) && !this.amMoving && MySingleton.thePlayer.getCurrentRoom().hasExit("west"))
+        {
+            this.amMoving = true;
+            this.turnOnExits();
+            MySingleton.currentDirection = "west";
+            this.gameObject.transform.LookAt(this.westExit.transform.position);
+        }
+
+        if (Input.GetKeyUp(KeyCode.RightArrow) && !this.amMoving && MySingleton.thePlayer.getCurrentRoom().hasExit("east"))
+        {
+            this.amMoving = true;
+            this.turnOnExits();
+            MySingleton.currentDirection = "east";
+            this.gameObject.transform.LookAt(this.eastExit.transform.position);
+
+        }
+
+        //make the player move in the current direction
+        if (MySingleton.currentDirection.Equals("north"))
+        {
+            this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.northExit.transform.position, this.speed * Time.deltaTime);
+        }
+
+        if (MySingleton.currentDirection.Equals("south"))
+        {
+            this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.southExit.transform.position, this.speed * Time.deltaTime);
+        }
+
+        if (MySingleton.currentDirection.Equals("west"))
+        {
+            this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.westExit.transform.position, this.speed * Time.deltaTime);
+        }
+
+        if (MySingleton.currentDirection.Equals("east"))
+        {
+            this.gameObject.transform.position = Vector3.MoveTowards(this.gameObject.transform.position, this.eastExit.transform.position, this.speed * Time.deltaTime);
+        }
     }
 }
