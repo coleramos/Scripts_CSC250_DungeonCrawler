@@ -7,7 +7,7 @@ public class pokemonAPI : MonoBehaviour
 {
     void Start()
     {
-        StartCoroutine(GetRequest("https://pokeapi.co/api/v2/ability/?offset=0&limit=2000"));
+        StartCoroutine(GetRequest("https://pokeapi.co/api/v2/pokemon?offset=0&limit=2000"));
     }
 
     IEnumerator GetRequest(string uri)

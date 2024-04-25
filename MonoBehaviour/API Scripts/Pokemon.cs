@@ -25,4 +25,26 @@ public class CollectionOfPokemon
     public string next;
     public string previous;
     public Pokemon[] results;
+
+    public void display()
+    {
+        Debug.Log($"Count: {this.count}, results: {this.results}");
+    }
+}
+
+[System.Serializable]
+public class CollectionOfPokemon
+{
+    public int count;
+    public string next;
+    public string previous;
+    public Pokemon[] results;
+
+    public void display()
+    {
+        for (int it = 0; int < this.results.Length; it++)
+        {
+            this.results[i].display();
+        }
+    }
 }

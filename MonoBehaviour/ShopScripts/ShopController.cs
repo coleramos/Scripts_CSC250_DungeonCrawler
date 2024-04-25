@@ -61,8 +61,8 @@ public class ShopController : MonoBehaviour
                             pos++;
                         }
                         print("Manually parsed with Item Object");
-                        Item theItem = new Item(itemParts[0], itemParts[1], int.Parse(itemParts[2]));
-                        theItem.display();
+ //                       Item theItem = new Item(itemParts[0], itemParts[1], int.Parse(itemParts[2]));
+ //                       theItem.display();
                     }
                 }
             }
