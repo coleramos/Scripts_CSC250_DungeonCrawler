@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.Networking;  // Required for UnityWebRequest
 using UnityEngine.UI;         // Required for UI elements like Text
 
-public class pokemonAPI : MonoBehaviour
+public class crypto : MonoBehaviour
 {
     void Start()
     {
-        StartCoroutine(GetRequest("https://pokeapi.co/api/v2/pokemon?offset=0&limit=2000"));
+        StartCoroutine(GetRequest("?"));
     }
 
     IEnumerator GetRequest(string uri)
